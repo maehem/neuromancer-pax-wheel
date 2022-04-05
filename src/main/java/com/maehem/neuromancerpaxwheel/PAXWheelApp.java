@@ -32,9 +32,13 @@ public class PAXWheelApp extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("Neuromancer PAX Wheel");
-        var scene = new Scene(new StackPane(new PAXWidget()));
+        PAXWidget paxWidget = new PAXWidget();
+        var scene = new Scene(new StackPane(paxWidget));
         stage.setScene(scene);
         stage.show();
+        stage.setMinHeight(100);
+        stage.setMinWidth(240);
+        paxWidget.updateButtonFont();
     }
 
     public static void main(String[] args) {

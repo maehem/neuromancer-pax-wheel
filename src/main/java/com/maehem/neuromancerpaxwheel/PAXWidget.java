@@ -16,11 +16,21 @@
 */
 package com.maehem.neuromancerpaxwheel;
 
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 /**
@@ -39,42 +49,49 @@ import javafx.scene.text.Font;
  */
 public class PAXWidget extends VBox {
 
-    private final ComboBox cb1 = new ComboBox();
-    private final ComboBox cb2 = new ComboBox();
-    private final ComboBox cb3 = new ComboBox();
+    private final ComboBox cb1 = new ComboBox(FXCollections.observableArrayList(PAXCodes.COL1));
+    private final ComboBox cb2 = new ComboBox(FXCollections.observableArrayList(PAXCodes.COL2));
+    private final ComboBox cb3 = new ComboBox(FXCollections.observableArrayList(PAXCodes.COL3));
     private final Label code = new Label("999999");
     
-    private final static int CB_WIDTH = 140;
-    private final static int FONT_SIZE = 40;
+    private final static int CB_FONT_SCALE = 30; // Fraction of window width
+    private final static int CODE_FONT_SCALE = 6; // Fraction of window width
     private final static double UI_GAP = 10.0;
     
     public PAXWidget() {
-        super(UI_GAP);
-
-        cb1.getItems().addAll((Object[]) PAXCodes.COL1);
         cb1.getSelectionModel().select(0);
-        cb1.setPrefWidth(CB_WIDTH);
-        
-        cb2.getItems().addAll((Object[]) PAXCodes.COL2);
         cb2.getSelectionModel().select(0);
-        cb2.setPrefWidth(CB_WIDTH);
-
-        cb3.getItems().addAll((Object[]) PAXCodes.COL3);
         cb3.getSelectionModel().select(0);
-        cb3.setPrefWidth(CB_WIDTH);
         
-        code.setFont(new Font(FONT_SIZE));
+        code.setStyle("-fx-font-size:20");        
+        setMinHeight(140);
         setAlignment(Pos.CENTER);
-        HBox spinners = new HBox(UI_GAP, cb1, cb2, cb3);
+
+        getChildren().addAll(
+                new HBox(UI_GAP, cb1, cb2, cb3), 
+                code
+        );
+
+        // Cause ComboBox buttons to resize with window size.
+        HBox.setHgrow(cb1, Priority.ALWAYS);
+        HBox.setHgrow(cb2, Priority.ALWAYS);
+        HBox.setHgrow(cb3, Priority.ALWAYS);        
+        cb1.setMaxWidth(9999);
+        cb2.setMaxWidth(9999);
+        cb3.setMaxWidth(9999);
         
-        getChildren().addAll(spinners, code);
         
-        // Whenever one of the ConboBox changes, update the code.
+        // Whenever one of the ConboBox changes, update the displayed code.
         cb1.setOnAction((t) -> { updateCode(); });
         cb2.setOnAction((t) -> { updateCode(); });
         cb3.setOnAction((t) -> { updateCode(); });
         
+        widthProperty().addListener((o) -> {
+            updateButtonFont();
+        });
+        
         updateCode();
+        updateButtonFont();
     }
 
     private void updateCode() {
@@ -84,5 +101,15 @@ public class PAXWidget extends VBox {
             cb3.getSelectionModel().getSelectedIndex()
         ));
 
-    }    
+    }
+    
+    protected final void updateButtonFont() {
+        double cbFontSize = getWidth()/CB_FONT_SCALE;
+        double codeFontSize = getWidth()/CODE_FONT_SCALE;
+        cb1.setStyle("-fx-font-size:" + cbFontSize);   
+        cb2.setStyle("-fx-font-size:" + cbFontSize);   
+        cb3.setStyle("-fx-font-size:" + cbFontSize);           
+        code.setStyle("-fx-font-size:" + codeFontSize); 
+        layout();
+    }
 }
