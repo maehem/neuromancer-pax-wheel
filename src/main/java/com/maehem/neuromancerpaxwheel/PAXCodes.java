@@ -41,7 +41,7 @@ public class PAXCodes {
      * @return @String code from CODE[][] lookup table
      */
     protected static String calculateCode(int a, int b, int c) {
-        return CODE[ (a+b)%16 ][ c ];
+        return CODE[ c ][ (a+b)%16 ];
     }
 
     public static final String COL1[] = {
